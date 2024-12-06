@@ -2,9 +2,9 @@
   "name": "hcd-488-final",
   "version": "1.0.0",
   "description": "link to original paper - https://docs.google.com/document/d/1X5YiUI3NWOFY9L7OUWCWjgPBXSDhxej-h1keG5Cjwlc/edit?usp=sharing",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "nodemon": "nodemon -e js,html,css --watch ./server --watch ./hosted ./server/app.js",
+    "nodemon": "nodemon -e js,html,css --watch ./src ./src/server.js",
     "start": "node ./src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
