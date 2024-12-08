@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Security in an Era of Generative AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 2em;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #fff;
+            padding: 1em;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        select, button {
+            font-size: 1em;
+            padding: 0.5em;
+            margin: 1em;
+        }
+        #result {
+            margin-top: 2em;
+            padding: 1em;
+            background-color: #fdfcf0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-container {
+            display: flex;
+            text-align: center;
+            margin: 2em 0;
+        }
+        #loadingMessage {
+            color: #535353;
+        }
+        nav {
+            text-align: end;
+            margin-bottom: 1em;
+        }
+        nav a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 1.2em;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="./sources.html">Sources</a>
+    </nav>
+    
+
+    <h1>Personal Security in an Era of Generative AI</h1>
+
+    <form id="adjustForm">
+        <label for="readingLevel">Select Reading Level:</label>
+        <select id="readingLevel" name="readingLevel">
+            <option value="middle school">Middle School</option>
+            <option value="high school">High School</option>
+            <option value="college">College</option>
+            <option value="college computing student">College Computing Student</option>
+            <option value="professional">Professional</option>
+            <option value="tech professional">Tech Professional</option>
+        </select>
+        
+        <div class="btn-container">
+            <button type="submit">Adjust Reading Level</button>
+            <button id="showOriginal">Show Original Essay</button>
+        </div>
+        <div id="loadingMessage"></div>
+    </form>
+
+    
+
+    <div id="result">
+         <!-- Adjusted text or original text will appear here -->
+    </div>
+
+    <footer>
+        <p>Written by Reva Sathe December 3, 2024</p>
+    </footer>
+
+    <script>
+        document.getElementById('adjustForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const readingLevel = document.getElementById('readingLevel').value;
+            const loadingMessage = document.getElementById('loadingMessage');
+
+            loadingMessage.innerHTML = '<p>It may take a second.</p>';
+
+            try {
+                const response = await fetch('/adjust', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ readingLevel })
+                });
+
+                const data = await response.json();
+
+
+                if (response.ok) {
+                    // Update the #result div with the adjusted text
+                    document.getElementById('result').innerHTML = `
+                        <h2>Personal Security in an Era of Generative AI (Reading Level: ${data.readingLevel})</h2>
+                        <p>${data.adjustedText.replace(/\n/g, '<br>')}</p>
+                    `;
+                    loadingMessage.innerHTML = '';
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('result').innerHTML = `<p>There was an error processing your request.</p>`;
+            }
+        });
+
+        async function loadOriginalEssay() {
+            try {
+                const response = await fetch('/original');
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Display the original essay in the #result div
+                    document.getElementById('result').innerHTML = `
+                        <h2>Personal Security in an Era of Generative AI - Original Essay</h2>
+                        <p>${data.originalText.replace(/\n/g, '<br>')}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('result').innerHTML = `<p>There was an error retrieving the original essay.</p>`;
+            }
+        }
+
+        // Add this code for the "Show Original" button
+        document.getElementById('showOriginal').addEventListener('click', async (e) => {
+            e.preventDefault(); // Prevent the default form submission behavior
+            
+            try {
+                const response = await fetch('/original');
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the #result div with the original text
+                    document.getElementById('result').innerHTML = `
+                        <h2>Personal Security in an Era of Generative AI - Original Essay</h2>
+                        <p>${data.originalText.replace(/\n/g, '<br>')}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('result').innerHTML = `<p>There was an error retrieving the original essay.</p>`;
+            }
+        });
+
+
+        // Load the original essay when the page loads
+        window.addEventListener('DOMContentLoaded', loadOriginalEssay);
+    </script>
+
+
+    <!--<script>
+        async function loadOriginalEssay() {
+        try {
+            const response = await fetch('/original');
+            const data = await response.json();
+
+            if (response.ok) {
+                // Display the original essay in the #result div
+                document.getElementById('result').innerHTML = `
+                    <h2>Personal Security in an Era of Generative AI - Original Essay</h2>
+                    <p>${data.originalText.replace(/\n/g, '<br>')}</p>
+                `;
+            } else {
+                document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById('result').innerHTML = `<p>There was an error retrieving the original essay.</p>`;
+        }
+    }
+
+        document.getElementById('adjustForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const readingLevel = document.getElementById('readingLevel').value;
+
+            try {
+                const response = await fetch('/adjust', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ readingLevel })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the #result div with the adjusted text
+                    document.getElementById('result').innerHTML = `
+                        <h2>Personal Security in an Era of Generative AI (Reading Level: ${data.readingLevel})</h2>
+                        <p>${data.adjustedText.replace(/\n/g, '<br>')}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('result').innerHTML = `<p>There was an error processing your request.</p>`;
+            }
+        });
+
+        document.getElementById('showOriginal').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/original');
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update the #result div with the original text
+                    document.getElementById('result').innerHTML = `
+                        <h2>Personal Security in an Era of Generative AI - Original Essay</h2>
+                        <p>${data.originalText.replace(/\n/g, '<br>')}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('result').innerHTML = `<p>There was an error retrieving the original essay.</p>`;
+            }
+        });
+
+        // Load the original essay when the page loads
+        window.addEventListener('DOMContentLoaded', loadOriginalEssay);
+    </script>-->
+
+</body>
+</html>
