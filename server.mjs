@@ -10,7 +10,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const app = express();
 const port = 3000;
 
-// Middleware to parse POST requests
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve the static HTML page
@@ -28,14 +28,11 @@ app.get('/original', async (req, res) => {
 
 // Endpoint to process the form and adjust reading level
 app.post('/adjust', async (req, res) => {
-    const { readingLevel } = req.body; // Get reading level from form submission
+    const { readingLevel } = req.body;
 
     try {
-        // Step 1: Read the content of the file
         const text = await fs.readFile('essay.txt', 'utf8');
-        //console.log("Original Text:", text);
 
-        // Step 2: Use OpenAI API to simplify the text
         const response = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
@@ -46,7 +43,6 @@ app.post('/adjust', async (req, res) => {
 
         const adjustedText = response.choices[0].message.content;
 
-        // Step 3: Send back the adjusted text as HTML response
         res.json({ 
             readingLevel, 
             adjustedText 
